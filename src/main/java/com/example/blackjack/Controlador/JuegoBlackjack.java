@@ -1,52 +1,77 @@
 package com.example.blackjack.Controlador;
 
+import com.example.blackjack.Modelo.Jugador;
 import com.example.blackjack.Modelo.ManoBlackjack;
 import com.example.blackjack.Modelo.Mazo;
 
+import java.util.ArrayList;
+
 public class JuegoBlackjack {
     private Mazo mazo;
-    private ManoBlackjack jugador;
-    private ManoBlackjack dealer;
+    private ArrayList<Jugador> jugadores;
+    private Jugador dealer;
+    private int jugadorActual = 0;
 
     public JuegoBlackjack() {
-        jugador = new ManoBlackjack();
-        dealer = new ManoBlackjack();
+        this.jugadores = new ArrayList<>();
+        for(int i = 0 ; i<=4 ; i++) {
+            jugadores.add(new Jugador("Jugador" + i));
+        }
+
+        this.dealer = new Jugador("Dealer");
         iniciarNuevaRonda();
     }
 
     public void iniciarNuevaRonda() {
         mazo = new Mazo(); // Mazo nuevo y mezclado
-        jugador.limpiar();
-        dealer.limpiar();
+
+        dealer.reiniciarMano();
+
+        for(Jugador j : jugadores){
+            j.reiniciarMano();
+
+        }
 
         // Repartir 2 cartas iniciales a cada uno (visibles)
-        jugador.agregarCarta(mazo.obtenerUnaCarta());
-        dealer.agregarCarta(mazo.obtenerUnaCarta());
-        jugador.agregarCarta(mazo.obtenerUnaCarta());
-        dealer.agregarCarta(mazo.obtenerUnaCarta());
+
+        for(Jugador j : jugadores){
+            for(int i = 0 ; i<2 ; i++){
+                j.getMano().agregarCarta(mazo.obtenerUnaCarta());
+            }
+        }
+
+        for(int i = 0 ; i < 2 ; i++){
+            dealer.getMano().agregarCarta(mazo.obtenerUnaCarta());
+        }
+
+    }
+
+    public Jugador getJugadorActual(){
+        return jugadores.get(jugadorActual);
     }
 
     public void pedirCartaJugador() {
-        if (!jugador.sePaso()) {
-            jugador.agregarCarta(mazo.obtenerUnaCarta());
-        }
+            if (!getJugadorActual().getMano().sePaso()) {
+                getJugadorActual().getMano().agregarCarta(mazo.obtenerUnaCarta());
+            }
+
     }
 
     // El dealer pide cartas automaticamente mientras su mano sume menos de 17
     public void turnoDealer() {
-        while (dealer.calcularPuntaje() < 17) {
-            dealer.agregarCarta(mazo.obtenerUnaCarta());
+        while (dealer.getMano().calcularPuntaje() < 17) {
+            dealer.getMano().agregarCarta(mazo.obtenerUnaCarta());
         }
     }
 
     // Retorna el resultado final de la ronda
     public String obtenerResultado() {
-        int ptsJugador = jugador.calcularPuntaje();
-        int ptsDealer = dealer.calcularPuntaje();
+        int ptsJugador = getJugadorActual().getMano().calcularPuntaje();
+        int ptsDealer = dealer.getMano().calcularPuntaje();
 
-        if (jugador.sePaso()) {
+        if (getJugadorActual().getMano().sePaso()) {
             return "Te has pasado de 21! La casa gana.";
-        } else if (dealer.sePaso()) {
+        } else if (dealer.getMano().sePaso()) {
             return "La casa se paso de 21! Ganaste!";
         } else if (ptsJugador > ptsDealer) {
             return "Ganaste la partida!";
@@ -57,11 +82,17 @@ public class JuegoBlackjack {
         }
     }
 
-    public ManoBlackjack getJugador() {
-        return jugador;
+    public Jugador getDealer() {
+        return dealer;
     }
 
-    public ManoBlackjack getDealer() {
-        return dealer;
+    public void siguienteJugador(){
+
+        jugadorActual++;
+
+        if(jugadorActual > 4){
+            jugadorActual = 0;
+        }
+
     }
 }
