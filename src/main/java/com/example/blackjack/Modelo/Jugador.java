@@ -32,6 +32,12 @@ public class Jugador {
         plantado = false;
     }
 
+    public boolean estaFueraDeJuego() {
+        return plantado || mano.sePaso();
+    }
+
+
+
     @Override
     public String toString(){
         return nombre + ":" + mano.toString();
