@@ -27,11 +27,13 @@ public class Jugador {
         this.plantado = true;
     }
 
+    // Limpia la mano del jugador seleccionado
     public void reiniciarMano(){
         mano.limpiar();
         plantado = false;
     }
 
+    // Para saber si se acabo el turno del jugador, se ocupa regresar si ya esta plantado O si se paso de 21
     public boolean estaFueraDeJuego() {
         return plantado || mano.sePaso();
     }

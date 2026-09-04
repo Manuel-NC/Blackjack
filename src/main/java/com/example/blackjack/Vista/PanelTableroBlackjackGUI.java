@@ -44,8 +44,8 @@ public class PanelTableroBlackjackGUI extends VBox {
         lblEstado = new Label("");
         lblEstado.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         lblEstado.setStyle("-fx-text-fill: white; -fx-alignment: center;");
-        lblEstado.setWrapText(true); // <--- Permite saltos de línea automáticos
-        lblEstado.setMaxWidth(750);  // <--- Define el ancho máximo antes de saltar de línea
+        lblEstado.setWrapText(true); // Permite saltos de línea automáticos
+        lblEstado.setMaxWidth(750);  // Define el ancho máximo antes de saltar de línea
 
         lblPuntosCasa = new Label();
         lblPuntosCasa.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
@@ -78,6 +78,7 @@ public class PanelTableroBlackjackGUI extends VBox {
         );
     }
 
+    // Metodo para colocar el fondo de la aplicacion
     private void configurarFondo() {
         try {
             var recurso = getClass().getResource("/com/example/blackjack/fondo_blackjack.png");
@@ -152,7 +153,7 @@ public class PanelTableroBlackjackGUI extends VBox {
         if (!juego.esFinDeRonda()) {
             lblTurnoActual.setText("TURNO DE: " + actual.getNombre());
         } else {
-            lblTurnoActual.setText(">>> RONDA FINALIZADA <<<");
+            lblTurnoActual.setText("--- RONDA FINALIZADA ---");
             btnPedir.setDisable(true);
             btnPlantarse.setDisable(true);
             mostrarResultadosFinDeRonda(juego);
@@ -163,12 +164,12 @@ public class PanelTableroBlackjackGUI extends VBox {
             lblTurnoActual.setText("TURNO DE: " + actual.getNombre());
             btnPedir.setDisable(false);
             btnPlantarse.setDisable(false);
-            btnNuevaRonda.setDisable(true); // <--- DESHABILITADO durante la partida
+            btnNuevaRonda.setDisable(true); // DESHABILITADO durante la partida
         } else {
             lblTurnoActual.setText(">>> RONDA FINALIZADA <<<");
             btnPedir.setDisable(true);
             btnPlantarse.setDisable(true);
-            btnNuevaRonda.setDisable(false); // <--- SOLO SE ACTIVA al terminar la ronda
+            btnNuevaRonda.setDisable(false); // SOLO SE ACTIVA al terminar la ronda
             mostrarResultadosFinDeRonda(juego);
         }
     }
@@ -181,7 +182,7 @@ public class PanelTableroBlackjackGUI extends VBox {
             resultados.append(j.getNombre())
                     .append(": ")
                     .append(juego.evaluarResultadoJugador(j))
-                    .append("\n"); // <--- Salto de línea por cada jugador
+                    .append("\n"); // Salto de línea por cada jugador
         }
         lblEstado.setText(resultados.toString().trim());
     }

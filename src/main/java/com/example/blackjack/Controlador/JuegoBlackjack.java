@@ -48,7 +48,7 @@ public class JuegoBlackjack {
         validarJugadorActual21();
     }
 
-    // [El resto de métodos de Juego21 se mantienen exactamente igual que antes]
+    // El resto de métodos de JuegoBlackjack se mantienen exactamente igual que antes
     public Jugador getJugadorActual() {
         if (indiceJugadorActual < jugadores.size()) {
             return jugadores.get(indiceJugadorActual);
@@ -120,7 +120,7 @@ public class JuegoBlackjack {
     public ArrayList<Jugador> getJugadores() { return jugadores; }
     public Jugador getDealer() { return dealer; }
 
-    // Método auxiliar para saltar automáticamente a los jugadores que inicien con 21 puntos
+    // Metodo auxiliar para saltar automaticamente a los jugadores que inicien con 21 puntos
     private void validarJugadorActual21() {
         while (!esFinDeRonda()) {
             Jugador actual = getJugadorActual();

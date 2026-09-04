@@ -30,11 +30,12 @@ public class JuegoBlackjackGUI extends Application {
         panelTablero.actualizarTablero(juego);
 
         Scene scene = new Scene(panelTablero, 1024, 768);
-        primaryStage.setTitle("Blackjack - JavaFX");
+        primaryStage.setTitle("Blackjack (sin apuestas)");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
+    // Metodo para solicitar el numero de jugadores con un ChoiceDialog, si el usuario lo cierra, se hace de 1 jugador por default
     private int solicitarNumeroJugadores() {
         ArrayList<Integer> opciones = new ArrayList<>();
         opciones.add(1);
@@ -52,20 +53,24 @@ public class JuegoBlackjackGUI extends Application {
     }
 
     private void configurarAccionesBotones() {
+
+        // Boton para pedir carta
         panelTablero.getBtnPedir().setOnAction(e -> {
             juego.pedirCartaJugadorActual();
             panelTablero.actualizarTablero(juego);
         });
 
+        // Boton para plantarse
         panelTablero.getBtnPlantarse().setOnAction(e -> {
             juego.plantarseJugadorActual();
             panelTablero.actualizarTablero(juego);
         });
 
+        // Boton para reiniciar el juego (solo se activa cuando se acaba la ronda)
         panelTablero.getBtnNuevaRonda().setOnAction(e -> {
             juego.iniciarNuevaRonda();
             panelTablero.getLblEstado().setText("");
-            panelTablero.actualizarTablero(juego); // <--- Se encarga de reactivar Pedir/Plantarse y bloquear Nueva Ronda
+            panelTablero.actualizarTablero(juego); // Se encarga de reactivar Pedir/Plantarse y bloquear Nueva Ronda
         });
     }
 }
