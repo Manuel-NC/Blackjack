@@ -14,14 +14,13 @@ public class JuegoBlackjackTextUI {
     }
 
     public void ejecutar() {
-        System.out.println("=========================================");
-        System.out.println("       ¡BIENVENIDO AL JUEGO DEL 21!      ");
+        System.out.println("HORA DE JUGAR BLACKJACK! (sin apuestas)      ");
         System.out.println("=========================================");
 
         // Preguntar la cantidad de jugadores (1-4)
         int numJugadores = 0;
         while (numJugadores < 1 || numJugadores > 4) {
-            System.out.print("¿Cuántos jugadores van a participar? (1-4): ");
+            System.out.print("Ingrese la cantidad de jugadores: (1-4): ");
             try {
                 numJugadores = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
@@ -29,26 +28,42 @@ public class JuegoBlackjackTextUI {
             }
         }
 
-        // Instanciar el controlador con el número seleccionado
+        // Instanciar el controlador
         this.juego = new JuegoBlackjack(numJugadores);
 
-        // [Aquí continúa la lógica normal de turnos e iteración de jugadores]
         boolean jugarNuevamente = true;
         while (jugarNuevamente) {
             while (!juego.esFinDeRonda()) {
                 Jugador actual = juego.getJugadorActual();
+
                 System.out.println("\n-----------------------------------------");
-                System.out.println("TURNO DE: " + actual.getNombre());
-                System.out.println("Cartas: " + actual.getMano());
+                System.out.println(">>> TURNO ACTUAL: " + actual.getNombre() + " <<<");
+                System.out.println("-----------------------------------------");
+
+                // Mostrar cartas de la Casa
+                System.out.println("Casa: " + juego.getDealer().getMano());
+
+                // Mostrar cartas de TODOS los jugadores
+                for (Jugador j : juego.getJugadores()) {
+                    if (j.equals(actual)) {
+                        System.out.println("-> " + j.getNombre() + ": " + j.getMano() + " [TURNO ACTUAL]");
+                    } else {
+                        System.out.println("   " + j.getNombre() + ": " + j.getMano());
+                    }
+                }
+
+                System.out.println("-----------------------------------------");
                 System.out.println("1. Pedir Carta");
                 System.out.println("2. Plantarse");
-                System.out.print("Selecciona una opción: ");
+                System.out.print("Selecciona una opcion: ");
 
                 String op = scanner.nextLine();
                 if (op.equals("1")) {
                     juego.pedirCartaJugadorActual();
                 } else if (op.equals("2")) {
                     juego.plantarseJugadorActual();
+                } else {
+                    System.out.println("Opcion invalida.");
                 }
             }
 
@@ -67,5 +82,7 @@ public class JuegoBlackjackTextUI {
                 jugarNuevamente = false;
             }
         }
+
+        System.out.println("\nJuego terminado!");
     }
 }
