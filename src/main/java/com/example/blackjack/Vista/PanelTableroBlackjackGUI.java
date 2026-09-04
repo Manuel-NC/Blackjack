@@ -12,7 +12,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class PanelTableroBlackjackGUI extends VBox {
 
@@ -43,8 +42,10 @@ public class PanelTableroBlackjackGUI extends VBox {
         lblTurnoActual.setStyle("-fx-text-fill: yellow; -fx-font-weight: bold;");
 
         lblEstado = new Label("");
-        lblEstado.setFont(new Font("Arial", 16));
-        lblEstado.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+        lblEstado.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        lblEstado.setStyle("-fx-text-fill: white; -fx-alignment: center;");
+        lblEstado.setWrapText(true); // <--- Permite saltos de línea automáticos
+        lblEstado.setMaxWidth(750);  // <--- Define el ancho máximo antes de saltar de línea
 
         lblPuntosCasa = new Label();
         lblPuntosCasa.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
@@ -177,9 +178,12 @@ public class PanelTableroBlackjackGUI extends VBox {
         ArrayList<Jugador> listaJugadores = juego.getJugadores();
 
         for (Jugador j : listaJugadores) {
-            resultados.append(j.getNombre()).append(": ").append(juego.evaluarResultadoJugador(j)).append("   |   ");
+            resultados.append(j.getNombre())
+                    .append(": ")
+                    .append(juego.evaluarResultadoJugador(j))
+                    .append("\n"); // <--- Salto de línea por cada jugador
         }
-        lblEstado.setText(resultados.toString());
+        lblEstado.setText(resultados.toString().trim());
     }
 
     private VBox crearTarjetaCarta(CartaInglesa carta) {

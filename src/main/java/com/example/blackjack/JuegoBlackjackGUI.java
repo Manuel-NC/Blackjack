@@ -3,8 +3,11 @@ package com.example.blackjack;
 import com.example.blackjack.Controlador.JuegoBlackjack;
 import com.example.blackjack.Vista.PanelTableroBlackjackGUI;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -26,7 +29,7 @@ public class JuegoBlackjackGUI extends Application {
 
         panelTablero.actualizarTablero(juego);
 
-        Scene scene = new Scene(panelTablero, 900, 600);
+        Scene scene = new Scene(panelTablero, 1024, 768);
         primaryStage.setTitle("Blackjack - JavaFX");
         primaryStage.setScene(scene);
         primaryStage.show();
