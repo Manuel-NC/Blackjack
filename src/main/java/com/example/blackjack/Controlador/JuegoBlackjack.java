@@ -57,7 +57,11 @@ public class JuegoBlackjack {
         Jugador actual = getJugadorActual();
         if (actual != null && !actual.estaFueraDeJuego()) {
             actual.getMano().agregarCarta(mazo.obtenerUnaCarta());
-            if (actual.getMano().sePaso()) {
+
+            // Si se pasa de 21 O si alcanza exactamente los 21 puntos,
+            // se planta o termina su turno automaticamente
+            if (actual.getMano().sePaso() || actual.getMano().calcularPuntaje() == 21) {
+                actual.plantarse(); // Marcamos al jugador como plantado
                 pasarAlSiguienteJugador();
             }
         }

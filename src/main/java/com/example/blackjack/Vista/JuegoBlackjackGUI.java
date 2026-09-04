@@ -2,6 +2,7 @@ package com.example.blackjack.Vista;
 
 import com.example.blackjack.Controlador.JuegoBlackjack;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceDialog;
 import javafx.stage.Stage;
 
@@ -11,9 +12,26 @@ import java.util.Optional;
 public class JuegoBlackjackGUI extends Application {
 
     private JuegoBlackjack juego;
+    private PanelTableroBlackjackGUI panelTablero;
 
     @Override
     public void start(Stage primaryStage) {
+        int numJugadores = solicitarNumeroJugadores();
+
+        juego = new JuegoBlackjack(numJugadores);
+        panelTablero = new PanelTableroBlackjackGUI();
+
+        configurarAccionesBotones();
+
+        panelTablero.actualizarTablero(juego);
+
+        Scene scene = new Scene(panelTablero, 900, 600);
+        primaryStage.setTitle("Blackjack - JavaFX");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private int solicitarNumeroJugadores() {
         ArrayList<Integer> opciones = new ArrayList<>();
         opciones.add(1);
         opciones.add(2);
@@ -26,9 +44,26 @@ public class JuegoBlackjackGUI extends Application {
         dialog.setContentText("Selecciona el número de jugadores (1-4):");
 
         Optional<Integer> result = dialog.showAndWait();
-        int numJugadores = result.orElse(1);
+        return result.orElse(1);
+    }
 
-        // Instanciar el controlador
-        juego = new JuegoBlackjack(numJugadores);
+    private void configurarAccionesBotones() {
+        panelTablero.getBtnPedir().setOnAction(e -> {
+            juego.pedirCartaJugadorActual();
+            panelTablero.actualizarTablero(juego);
+        });
+
+        panelTablero.getBtnPlantarse().setOnAction(e -> {
+            juego.plantarseJugadorActual();
+            panelTablero.actualizarTablero(juego);
+        });
+
+        panelTablero.getBtnNuevaRonda().setOnAction(e -> {
+            juego.iniciarNuevaRonda();
+            panelTablero.getBtnPedir().setDisable(false);
+            panelTablero.getBtnPlantarse().setDisable(false);
+            panelTablero.getLblEstado().setText("");
+            panelTablero.actualizarTablero(juego);
+        });
     }
 }
