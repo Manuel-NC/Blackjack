@@ -43,6 +43,9 @@ public class JuegoBlackjack {
         }
 
         indiceJugadorActual = 0;
+
+        // Verificamos si el primer jugador (o los siguientes) obtuvieron 21 desde el inicio
+        validarJugadorActual21();
     }
 
     // [El resto de métodos de Juego21 se mantienen exactamente igual que antes]
@@ -58,10 +61,8 @@ public class JuegoBlackjack {
         if (actual != null && !actual.estaFueraDeJuego()) {
             actual.getMano().agregarCarta(mazo.obtenerUnaCarta());
 
-            // Si se pasa de 21 O si alcanza exactamente los 21 puntos,
-            // se planta o termina su turno automaticamente
             if (actual.getMano().sePaso() || actual.getMano().calcularPuntaje() == 21) {
-                actual.plantarse(); // Marcamos al jugador como plantado
+                actual.plantarse();
                 pasarAlSiguienteJugador();
             }
         }
@@ -79,6 +80,9 @@ public class JuegoBlackjack {
         indiceJugadorActual++;
         if (indiceJugadorActual >= jugadores.size()) {
             turnoDealer();
+        } else {
+            // Verificar si el nuevo jugador al que le toca el turno ya tenía 21 desde el inicio
+            validarJugadorActual21();
         }
     }
 
@@ -115,4 +119,20 @@ public class JuegoBlackjack {
 
     public ArrayList<Jugador> getJugadores() { return jugadores; }
     public Jugador getDealer() { return dealer; }
+
+    // Método auxiliar para saltar automáticamente a los jugadores que inicien con 21 puntos
+    private void validarJugadorActual21() {
+        while (!esFinDeRonda()) {
+            Jugador actual = getJugadorActual();
+            if (actual != null && actual.getMano().calcularPuntaje() == 21) {
+                actual.plantarse();
+                indiceJugadorActual++;
+                if (indiceJugadorActual >= jugadores.size()) {
+                    turnoDealer();
+                }
+            } else {
+                break; // Si el jugador actual no tiene 21, se detiene el bucle para que juegue normalmente
+            }
+        }
+    }
 }

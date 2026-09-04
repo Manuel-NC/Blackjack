@@ -4,6 +4,7 @@ module com.example.blackjack {
 
     // Abrir y exportar el paquete donde esta la GUI
     exports com.example.blackjack.Vista;
+    opens com.example.blackjack to javafx.graphics, javafx.fxml;
     opens com.example.blackjack.Vista to javafx.graphics, javafx.fxml;
 
     // Exportar el resto de paquetes
