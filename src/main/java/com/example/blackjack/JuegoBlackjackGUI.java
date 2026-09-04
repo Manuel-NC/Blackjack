@@ -1,6 +1,7 @@
-package com.example.blackjack.Vista;
+package com.example.blackjack;
 
 import com.example.blackjack.Controlador.JuegoBlackjack;
+import com.example.blackjack.Vista.PanelTableroBlackjackGUI;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceDialog;
@@ -60,10 +61,8 @@ public class JuegoBlackjackGUI extends Application {
 
         panelTablero.getBtnNuevaRonda().setOnAction(e -> {
             juego.iniciarNuevaRonda();
-            panelTablero.getBtnPedir().setDisable(false);
-            panelTablero.getBtnPlantarse().setDisable(false);
             panelTablero.getLblEstado().setText("");
-            panelTablero.actualizarTablero(juego);
+            panelTablero.actualizarTablero(juego); // <--- Se encarga de reactivar Pedir/Plantarse y bloquear Nueva Ronda
         });
     }
 }

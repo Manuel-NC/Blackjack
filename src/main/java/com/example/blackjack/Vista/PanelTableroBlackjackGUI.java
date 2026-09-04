@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -78,16 +79,28 @@ public class PanelTableroBlackjackGUI extends VBox {
 
     private void configurarFondo() {
         try {
-            Image imagenFondo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("C:/Users/manue/IdeaProjects/Blackjack/src/main/resources/com/example/blackjack/fondo_blackjack.png")));
+            var recurso = getClass().getResource("/com/example/blackjack/fondo_blackjack.png");
+
+            if (recurso == null) {
+                System.err.println("No se encontró la imagen en los recursos.");
+                this.setStyle("-fx-padding: 20; -fx-background-color: #1b5e20;");
+                return;
+            }
+
+            Image imagenFondo = new Image(recurso.toExternalForm());
+
+            // Configuración para que actúe como mosaico (patrón repetitivo)
             BackgroundImage backgroundImage = new BackgroundImage(
                     imagenFondo,
-                    BackgroundRepeat.NO_REPEAT,
-                    BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.CENTER,
-                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+                    BackgroundRepeat.REPEAT,   // Repetir horizontalmente
+                    BackgroundRepeat.REPEAT,   // Repetir verticalmente
+                    BackgroundPosition.DEFAULT,
+                    BackgroundSize.DEFAULT     // Mantiene el tamaño real del patrón
             );
+
             this.setBackground(new Background(backgroundImage));
         } catch (Exception e) {
+            System.err.println("Error al cargar la imagen: " + e.getMessage());
             this.setStyle("-fx-padding: 20; -fx-background-color: #1b5e20;");
         }
     }
@@ -143,6 +156,20 @@ public class PanelTableroBlackjackGUI extends VBox {
             btnPlantarse.setDisable(true);
             mostrarResultadosFinDeRonda(juego);
         }
+
+        // Estado de los botones según la fase del juego
+        if (!juego.esFinDeRonda()) {
+            lblTurnoActual.setText("TURNO DE: " + actual.getNombre());
+            btnPedir.setDisable(false);
+            btnPlantarse.setDisable(false);
+            btnNuevaRonda.setDisable(true); // <--- DESHABILITADO durante la partida
+        } else {
+            lblTurnoActual.setText(">>> RONDA FINALIZADA <<<");
+            btnPedir.setDisable(true);
+            btnPlantarse.setDisable(true);
+            btnNuevaRonda.setDisable(false); // <--- SOLO SE ACTIVA al terminar la ronda
+            mostrarResultadosFinDeRonda(juego);
+        }
     }
 
     private void mostrarResultadosFinDeRonda(JuegoBlackjack juego) {
@@ -155,12 +182,68 @@ public class PanelTableroBlackjackGUI extends VBox {
         lblEstado.setText(resultados.toString());
     }
 
-    private Label crearTarjetaCarta(CartaInglesa carta) {
-        Label lbl = new Label(carta.toString());
-        lbl.setFont(new Font("Monospaced", 16));
-        String colorTexto = carta.getColor().equalsIgnoreCase("rojo") ? "red" : "black";
-        lbl.setStyle("-fx-background-color: white; -fx-padding: 8 12; -fx-border-color: black; -fx-border-radius: 5; -fx-background-radius: 5; -fx-text-fill: " + colorTexto + ";");
-        return lbl;
+    private VBox crearTarjetaCarta(CartaInglesa carta) {
+        // Convertir el nombre del palo al símbolo Unicode correspondiente
+        String paloTexto = carta.getPalo().toString().toUpperCase();
+        String paloSimbolo = "";
+
+        switch (paloTexto) {
+            case "CORAZON":
+            case "CORAZONES":
+                paloSimbolo = "♥";
+                break;
+            case "DIAMANTE":
+            case "DIAMANTES":
+                paloSimbolo = "♦";
+                break;
+            case "TREBOL":
+            case "TREBOLES":
+                paloSimbolo = "♣";
+                break;
+            case "PICA":
+            case "PICAS":
+                paloSimbolo = "♠";
+                break;
+            default:
+                paloSimbolo = paloTexto; // Por si acaso
+                break;
+        }
+
+        // Formatear el valor del número/letra
+        String valorTexto = String.valueOf(carta.getValor());
+        if (carta.getValor() == 11) valorTexto = "J";
+        else if (carta.getValor() == 12) valorTexto = "Q";
+        else if (carta.getValor() == 13) valorTexto = "K";
+        else if (carta.getValor() == 14 || carta.getValor() == 1) valorTexto = "A";
+
+        String colorTexto = carta.getColor().equalsIgnoreCase("rojo") ? "#cc0000" : "#000000";
+
+        // Contenedor rectangular de la carta
+        VBox tarjeta = new VBox(2);
+        tarjeta.setPrefSize(50, 75);
+        tarjeta.setMinSize(50, 75);
+        tarjeta.setMaxSize(50, 75);
+        tarjeta.setAlignment(Pos.CENTER);
+
+        tarjeta.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-border-color: #222222; " +
+                        "-fx-border-width: 1px; " +
+                        "-fx-border-radius: 5px; " +
+                        "-fx-background-radius: 5px;"
+        );
+
+        Label lblValor = new Label(valorTexto);
+        lblValor.setFont(Font.font("Segoe UI", FontWeight.BOLD, 16));
+        lblValor.setStyle("-fx-text-fill: " + colorTexto + ";");
+
+        Label lblPalo = new Label(paloSimbolo);
+        lblPalo.setFont(Font.font("Segoe UI Symbol", 20));
+        lblPalo.setStyle("-fx-text-fill: " + colorTexto + ";");
+
+        tarjeta.getChildren().addAll(lblValor, lblPalo);
+
+        return tarjeta;
     }
 
     public Button getBtnPedir() { return btnPedir; }
