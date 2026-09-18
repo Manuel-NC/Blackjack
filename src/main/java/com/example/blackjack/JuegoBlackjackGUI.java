@@ -13,11 +13,13 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Optional;
 
+// Clase principal de JavaFX que inicia la aplicacion con interfaz grafica
 public class JuegoBlackjackGUI extends Application {
 
     private JuegoBlackjack juego;
     private PanelTableroBlackjackGUI panelTablero;
 
+    // Metodo de entrada principal para aplicaciones JavaFX
     @Override
     public void start(Stage primaryStage) {
         int numJugadores = solicitarNumeroJugadores();
@@ -35,7 +37,7 @@ public class JuegoBlackjackGUI extends Application {
         primaryStage.show();
     }
 
-    // Metodo para solicitar el numero de jugadores con un ChoiceDialog, si el usuario lo cierra, se hace de 1 jugador por default
+    // Muestra un dialogo emergente para elegir la cantidad de jugadores entre 1 y 4
     private int solicitarNumeroJugadores() {
         ArrayList<Integer> opciones = new ArrayList<>();
         opciones.add(1);
@@ -44,14 +46,15 @@ public class JuegoBlackjackGUI extends Application {
         opciones.add(4);
 
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, opciones);
-        dialog.setTitle("Configuración de Partida");
-        dialog.setHeaderText("¡Bienvenido a Blackjack!");
-        dialog.setContentText("Selecciona el número de jugadores (1-4):");
+        dialog.setTitle("Configuracion de Partida");
+        dialog.setHeaderText("Bienvenido a Blackjack!");
+        dialog.setContentText("Selecciona el numero de jugadores (1-4):");
 
         Optional<Integer> result = dialog.showAndWait();
         return result.orElse(1);
     }
 
+    // Conecta los eventos de los botones de la vista con la logica del controlador
     private void configurarAccionesBotones() {
 
         // Boton para pedir carta
@@ -66,11 +69,20 @@ public class JuegoBlackjackGUI extends Application {
             panelTablero.actualizarTablero(juego);
         });
 
-        // Boton para reiniciar el juego (solo se activa cuando se acaba la ronda)
+        // Boton para deshacer la ultima jugada
+        panelTablero.getBtnUndo().setOnAction(e -> {
+            boolean exito = juego.deshacerUltimaCartaJugadorActual();
+            if (exito) {
+                panelTablero.getLblEstado().setText(""); // Limpia mensaje de estado si la ronda habia terminado
+                panelTablero.actualizarTablero(juego);
+            }
+        });
+
+        // Boton para reiniciar la ronda cuando todos han terminado
         panelTablero.getBtnNuevaRonda().setOnAction(e -> {
             juego.iniciarNuevaRonda();
             panelTablero.getLblEstado().setText("");
-            panelTablero.actualizarTablero(juego); // Se encarga de reactivar Pedir/Plantarse y bloquear Nueva Ronda
+            panelTablero.actualizarTablero(juego);
         });
     }
 }
