@@ -1,49 +1,49 @@
 package com.example.blackjack.Modelo;
 
+import com.example.blackjack.Estructuras.Pila;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Mazo {
-    private ArrayList<CartaInglesa> cartas = new ArrayList<>();
+    private Pila<CartaInglesa> cartas;
 
     public Mazo() {
-        llenar(); // crea todas las cartas, excluyendo Jokers
-        mezclar();
+        llenarYMezclar();
     }
 
-    /**
-     * Obtiene todas las cartas del mazo.
-     * @return
-     */
-    public ArrayList<CartaInglesa> getCartas() {
+    public Pila<CartaInglesa> getCartas() {
         return cartas;
     }
 
     public CartaInglesa obtenerUnaCarta() {
-        if (cartas.size() > 0) {
-            return cartas.remove(0);
-        }
-        return null;
-    }
-    private void mezclar() {
-        Collections.shuffle(cartas);
+        return cartas.pop();
     }
 
-    private void llenar() {
-        for (int i = 2; i <=14 ; i++) {
+    private void llenarYMezclar() {
+        ArrayList<CartaInglesa> listaTemporal = new ArrayList<>();
+
+        for (int i = 2; i <= 14; i++) {
             for (Palo palo : Palo.values()) {
-                CartaInglesa c = new CartaInglesa(i,palo, palo.getColor());
-                cartas.add(c);
+                listaTemporal.add(new CartaInglesa(i, palo, palo.getColor()));
             }
         }
-    }
 
-    public void ordenar() {
-        Collections.sort(cartas);
+        Collections.shuffle(listaTemporal);
+
+        cartas = new Pila<>(52);
+        for (CartaInglesa c : listaTemporal) {
+            cartas.push(c);
+        }
     }
 
     @Override
     public String toString() {
-        return cartas.toString();
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < cartas.getTamano(); i++) {
+            sb.append(cartas.get(i));
+            if (i < cartas.getTamano() - 1) sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

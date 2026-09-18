@@ -1,6 +1,7 @@
 package com.example.blackjack.Vista;
 
 import com.example.blackjack.Controlador.JuegoBlackjack;
+import com.example.blackjack.Estructuras.Pila;
 import com.example.blackjack.Modelo.Jugador;
 
 import java.util.Scanner;
@@ -17,7 +18,6 @@ public class JuegoBlackjackTextUI {
         System.out.println("HORA DE JUGAR BLACKJACK! (sin apuestas)      ");
         System.out.println("=========================================");
 
-        // Preguntar la cantidad de jugadores (1-4)
         int numJugadores = 0;
         while (numJugadores < 1 || numJugadores > 4) {
             System.out.print("Ingrese la cantidad de jugadores: (1-4): ");
@@ -28,7 +28,6 @@ public class JuegoBlackjackTextUI {
             }
         }
 
-        // Instanciar el controlador
         this.juego = new JuegoBlackjack(numJugadores);
 
         boolean jugarNuevamente = true;
@@ -40,11 +39,11 @@ public class JuegoBlackjackTextUI {
                 System.out.println(">>> TURNO ACTUAL: " + actual.getNombre() + " <<<");
                 System.out.println("-----------------------------------------");
 
-                // Mostrar cartas de la Casa
                 System.out.println("Casa: " + juego.getDealer().getMano());
 
-                // Mostrar cartas de TODOS los jugadores
-                for (Jugador j : juego.getJugadores()) {
+                Pila<Jugador> lista = juego.getJugadores();
+                for (int i = 0; i < lista.getTamano(); i++) {
+                    Jugador j = lista.get(i);
                     if (j.equals(actual)) {
                         System.out.println("-> " + j.getNombre() + ": " + j.getMano() + " [TURNO ACTUAL]");
                     } else {
@@ -67,10 +66,11 @@ public class JuegoBlackjackTextUI {
                 }
             }
 
-            // Resultados al terminar la ronda de todos
             System.out.println("\n================ RESULTADOS ================");
             System.out.println("Casa: " + juego.getDealer().getMano());
-            for (Jugador j : juego.getJugadores()) {
+            Pila<Jugador> lista = juego.getJugadores();
+            for (int i = 0; i < lista.getTamano(); i++) {
+                Jugador j = lista.get(i);
                 System.out.println(j.getNombre() + ": " + j.getMano() + " -> " + juego.evaluarResultadoJugador(j));
             }
             System.out.println("===========================================");
