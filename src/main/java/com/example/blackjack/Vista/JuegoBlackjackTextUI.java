@@ -1,28 +1,24 @@
 package com.example.blackjack.Vista;
 
 import com.example.blackjack.Controlador.JuegoBlackjack;
-import com.example.blackjack.Estructuras.Pila;
 import com.example.blackjack.Modelo.Jugador;
-
+import java.util.ArrayList;
 import java.util.Scanner;
 
-// Interfaz de usuario por consola para interactuar con el juego de Blackjack
+// Interfaz de usuario por consola adaptada para usar ArrayList de jugadores
 public class JuegoBlackjackTextUI {
     private JuegoBlackjack juego;
     private Scanner scanner;
 
-    // Constructor que inicializa el lector de entradas de consola
     public JuegoBlackjackTextUI() {
         this.scanner = new Scanner(System.in);
     }
 
-    // Inicia y controla el flujo principal de la interfaz de texto
     public void ejecutar() {
         System.out.println("HORA DE JUGAR BLACKJACK! (sin apuestas)      ");
         System.out.println("=========================================");
 
         int numJugadores = 0;
-        // Solicita el numero de jugadores validando que este entre 1 y 4
         while (numJugadores < 1 || numJugadores > 4) {
             System.out.print("Ingrese la cantidad de jugadores: (1-4): ");
             try {
@@ -32,13 +28,10 @@ public class JuegoBlackjackTextUI {
             }
         }
 
-        // Crea la instancia del juego con la cantidad de jugadores seleccionada
         this.juego = new JuegoBlackjack(numJugadores);
 
         boolean jugarNuevamente = true;
-        // Ciclo principal de partidas
         while (jugarNuevamente) {
-            // Ciclo de turnos para los jugadores dentro de la ronda
             while (!juego.esFinDeRonda()) {
                 Jugador actual = juego.getJugadorActual();
 
@@ -48,10 +41,9 @@ public class JuegoBlackjackTextUI {
 
                 System.out.println("Casa: " + juego.getDealer().getMano());
 
-                // Muestra el estado actual de las manos de todos los jugadores
-                Pila<Jugador> lista = juego.getJugadores();
-                for (int i = 0; i < lista.getTamano(); i++) {
-                    Jugador j = lista.getElemento(i);
+                // Muestra las manos recorriendo la lista de jugadores como ArrayList
+                ArrayList<Jugador> lista = juego.getJugadores();
+                for (Jugador j : lista) {
                     if (j.equals(actual)) {
                         System.out.println("-> " + j.getNombre() + ": " + j.getMano() + " [TURNO ACTUAL]");
                     } else {
@@ -64,7 +56,6 @@ public class JuegoBlackjackTextUI {
                 System.out.println("2. Plantarse");
                 System.out.print("Selecciona una opcion: ");
 
-                // Procesa la decision ingresada por el usuario
                 String op = scanner.nextLine();
                 if (op.equals("1")) {
                     juego.pedirCartaJugadorActual();
@@ -75,17 +66,15 @@ public class JuegoBlackjackTextUI {
                 }
             }
 
-            // Muestra el resumen final de la ronda cuando todos los turnos terminan
+            // Muestra los resultados recorriendo la lista con bucle for-each
             System.out.println("\n================ RESULTADOS ================");
             System.out.println("Casa: " + juego.getDealer().getMano());
-            Pila<Jugador> lista = juego.getJugadores();
-            for (int i = 0; i < lista.getTamano(); i++) {
-                Jugador j = lista.getElemento(i);
+            ArrayList<Jugador> lista = juego.getJugadores();
+            for (Jugador j : lista) {
                 System.out.println(j.getNombre() + ": " + j.getMano() + " -> " + juego.evaluarResultadoJugador(j));
             }
             System.out.println("===========================================");
 
-            // Pregunta al usuario si desea iniciar una nueva partida
             System.out.print("\n¿Desean jugar otra ronda? (s/n): ");
             if (scanner.nextLine().equalsIgnoreCase("s")) {
                 juego.iniciarNuevaRonda();
