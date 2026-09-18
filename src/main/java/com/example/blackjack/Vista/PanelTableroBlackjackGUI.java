@@ -12,6 +12,8 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.util.ArrayList;
+
 // Panel grafico principal que dibuja el tablero de juego en JavaFX
 public class PanelTableroBlackjackGUI extends VBox {
 
@@ -122,10 +124,10 @@ public class PanelTableroBlackjackGUI extends VBox {
         // Actualizar cartas y puntos de los jugadores
         boxTodosLosJugadores.getChildren().clear();
         Jugador actual = juego.getJugadorActual();
-        Pila<Jugador> listaJugadores = juego.getJugadores();
 
-        for (int i = 0; i < listaJugadores.getTamano(); i++) {
-            Jugador j = listaJugadores.getElemento(i);
+        ArrayList<Jugador> listaJugadores = juego.getJugadores();
+
+        for (Jugador j : listaJugadores) {
             VBox panelJugador = new VBox(8);
             panelJugador.setAlignment(Pos.CENTER);
 
@@ -145,6 +147,7 @@ public class PanelTableroBlackjackGUI extends VBox {
             HBox boxCartas = new HBox(5);
             boxCartas.setAlignment(Pos.CENTER);
 
+            // Las cartas de la mano siguen siendo Pila<CartaInglesa>
             Pila<CartaInglesa> cartasJugador = j.getMano().getCartas();
             for (int k = 0; k < cartasJugador.getTamano(); k++) {
                 boxCartas.getChildren().add(crearTarjetaCarta(cartasJugador.getElemento(k)));
@@ -174,10 +177,9 @@ public class PanelTableroBlackjackGUI extends VBox {
     // Muestra los resultados de cada jugador al concluir la ronda
     private void mostrarResultadosFinDeRonda(JuegoBlackjack juego) {
         StringBuilder resultados = new StringBuilder();
-        Pila<Jugador> listaJugadores = juego.getJugadores();
+        ArrayList<Jugador> listaJugadores = juego.getJugadores();
 
-        for (int i = 0; i < listaJugadores.getTamano(); i++) {
-            Jugador j = listaJugadores.getElemento(i);
+        for (Jugador j : listaJugadores) {
             resultados.append(j.getNombre())
                     .append(": ")
                     .append(juego.evaluarResultadoJugador(j))
