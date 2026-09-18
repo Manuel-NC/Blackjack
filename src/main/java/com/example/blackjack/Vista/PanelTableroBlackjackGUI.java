@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+// Panel grafico principal que dibuja el tablero de juego en JavaFX
 public class PanelTableroBlackjackGUI extends VBox {
 
     private Label lblTurnoActual;
@@ -25,7 +26,9 @@ public class PanelTableroBlackjackGUI extends VBox {
     private Button btnPedir;
     private Button btnPlantarse;
     private Button btnNuevaRonda;
+    private Button btnUndo;
 
+    // Constructor que configura el diseno inicial y los componentes visuales
     public PanelTableroBlackjackGUI() {
         this.setAlignment(Pos.CENTER);
         this.setSpacing(20);
@@ -35,6 +38,7 @@ public class PanelTableroBlackjackGUI extends VBox {
         configurarFondo();
     }
 
+    // Inicializa las etiquetas, contenedores y botones de la interfaz
     private void inicializarComponentes() {
         lblTurnoActual = new Label();
         lblTurnoActual.setFont(new Font("Arial", 18));
@@ -57,9 +61,11 @@ public class PanelTableroBlackjackGUI extends VBox {
 
         btnPedir = new Button("Pedir Carta");
         btnPlantarse = new Button("Plantarse");
+        btnUndo = new Button("Deshacer (Undo)");
         btnNuevaRonda = new Button("Nueva Ronda");
 
-        HBox boxBotones = new HBox(15, btnPedir, btnPlantarse, btnNuevaRonda);
+        // Agrupa los botones de accion en un contenedor horizontal
+        HBox boxBotones = new HBox(15, btnPedir, btnPlantarse, btnUndo, btnNuevaRonda);
         boxBotones.setAlignment(Pos.CENTER);
 
         VBox layoutCasa = new VBox(5);
@@ -77,6 +83,7 @@ public class PanelTableroBlackjackGUI extends VBox {
         );
     }
 
+    // Carga la imagen de fondo del tablero o aplica un color verde por defecto
     private void configurarFondo() {
         try {
             var recurso = getClass().getResource("/com/example/blackjack/fondo_blackjack.png");
@@ -102,22 +109,23 @@ public class PanelTableroBlackjackGUI extends VBox {
         }
     }
 
+    // Actualiza el tablero redibujando cartas y ajustando el estado de los botones
     public void actualizarTablero(JuegoBlackjack juego) {
-        // Actualizar casa
+        // Actualizar cartas y puntos del dealer
         boxCasa.getChildren().clear();
         Pila<CartaInglesa> cartasCasa = juego.getDealer().getMano().getCartas();
         for (int i = 0; i < cartasCasa.getTamano(); i++) {
-            boxCasa.getChildren().add(crearTarjetaCarta(cartasCasa.get(i)));
+            boxCasa.getChildren().add(crearTarjetaCarta(cartasCasa.getElemento(i)));
         }
         lblPuntosCasa.setText("Puntos: " + juego.getDealer().getMano().calcularPuntaje());
 
-        // Actualizar jugadores
+        // Actualizar cartas y puntos de los jugadores
         boxTodosLosJugadores.getChildren().clear();
         Jugador actual = juego.getJugadorActual();
         Pila<Jugador> listaJugadores = juego.getJugadores();
 
         for (int i = 0; i < listaJugadores.getTamano(); i++) {
-            Jugador j = listaJugadores.get(i);
+            Jugador j = listaJugadores.getElemento(i);
             VBox panelJugador = new VBox(8);
             panelJugador.setAlignment(Pos.CENTER);
 
@@ -139,33 +147,37 @@ public class PanelTableroBlackjackGUI extends VBox {
 
             Pila<CartaInglesa> cartasJugador = j.getMano().getCartas();
             for (int k = 0; k < cartasJugador.getTamano(); k++) {
-                boxCartas.getChildren().add(crearTarjetaCarta(cartasJugador.get(k)));
+                boxCartas.getChildren().add(crearTarjetaCarta(cartasJugador.getElemento(k)));
             }
 
             panelJugador.getChildren().addAll(lblNombre, lblPuntos, boxCartas);
             boxTodosLosJugadores.getChildren().add(panelJugador);
         }
 
+        // Habilita o deshabilita botones segun el estado de la ronda
         if (!juego.esFinDeRonda()) {
             lblTurnoActual.setText("TURNO DE: " + actual.getNombre());
             btnPedir.setDisable(false);
             btnPlantarse.setDisable(false);
+            btnUndo.setDisable(false);
             btnNuevaRonda.setDisable(true);
         } else {
             lblTurnoActual.setText("--- RONDA FINALIZADA ---");
             btnPedir.setDisable(true);
             btnPlantarse.setDisable(true);
+            btnUndo.setDisable(false);
             btnNuevaRonda.setDisable(false);
             mostrarResultadosFinDeRonda(juego);
         }
     }
 
+    // Muestra los resultados de cada jugador al concluir la ronda
     private void mostrarResultadosFinDeRonda(JuegoBlackjack juego) {
         StringBuilder resultados = new StringBuilder();
         Pila<Jugador> listaJugadores = juego.getJugadores();
 
         for (int i = 0; i < listaJugadores.getTamano(); i++) {
-            Jugador j = listaJugadores.get(i);
+            Jugador j = listaJugadores.getElemento(i);
             resultados.append(j.getNombre())
                     .append(": ")
                     .append(juego.evaluarResultadoJugador(j))
@@ -174,6 +186,7 @@ public class PanelTableroBlackjackGUI extends VBox {
         lblEstado.setText(resultados.toString().trim());
     }
 
+    // Crea el componente visual individual para representar una carta
     private VBox crearTarjetaCarta(CartaInglesa carta) {
         String paloTexto = carta.getPalo().toString().toUpperCase();
         String paloSimbolo = "";
@@ -235,8 +248,10 @@ public class PanelTableroBlackjackGUI extends VBox {
         return tarjeta;
     }
 
+    // Getters para acceder a los controles desde la vista principal
     public Button getBtnPedir() { return btnPedir; }
     public Button getBtnPlantarse() { return btnPlantarse; }
     public Button getBtnNuevaRonda() { return btnNuevaRonda; }
     public Label getLblEstado() { return lblEstado; }
+    public Button getBtnUndo() { return btnUndo; }
 }

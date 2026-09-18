@@ -40,11 +40,6 @@ public class Pila<T> {
         }
     }
 
-    public T peek() {
-        if (tope == -1) return null;
-        return (T) pila[tope];
-    }
-
     public boolean vacia() {
         return (tope == -1);
     }
@@ -57,7 +52,7 @@ public class Pila<T> {
         return tope + 1;
     }
 
-    public T get(int indice) {
+    public T getElemento(int indice) {
         if (indice < 0 || indice > tope) return null;
         return (T) pila[indice];
     }
