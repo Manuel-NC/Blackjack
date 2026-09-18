@@ -1,25 +1,22 @@
 package com.example.blackjack.Controlador;
 
+import com.example.blackjack.Estructuras.Pila;
 import com.example.blackjack.Modelo.Jugador;
 import com.example.blackjack.Modelo.Mazo;
 
-import java.util.ArrayList;
-
 public class JuegoBlackjack {
     private Mazo mazo;
-    private ArrayList<Jugador> jugadores;
+    private Pila<Jugador> jugadores;
     private Jugador dealer;
     private int indiceJugadorActual;
 
-    // Ahora recibe por parámetro la cantidad elegida (de 1 a 4)
     public JuegoBlackjack(int numJugadores) {
-        // Validar que el número esté en el rango permitido
         if (numJugadores < 1) numJugadores = 1;
         if (numJugadores > 4) numJugadores = 4;
 
-        this.jugadores = new ArrayList<>();
+        this.jugadores = new Pila<>(numJugadores);
         for (int i = 1; i <= numJugadores; i++) {
-            jugadores.add(new Jugador("Jugador " + i));
+            jugadores.push(new Jugador("Jugador " + i));
         }
         this.dealer = new Jugador("Casa (Dealer)");
 
@@ -30,27 +27,24 @@ public class JuegoBlackjack {
         mazo = new Mazo();
         dealer.reiniciarMano();
 
-        for (Jugador j : jugadores) {
-            j.reiniciarMano();
+        for (int i = 0; i < jugadores.getTamano(); i++) {
+            jugadores.get(i).reiniciarMano();
         }
 
-        // Repartir 2 cartas a cada jugador configurado y a la casa
+        // Repartir 2 cartas a cada jugador y a la casa
         for (int i = 0; i < 2; i++) {
-            for (Jugador j : jugadores) {
-                j.getMano().agregarCarta(mazo.obtenerUnaCarta());
+            for (int j = 0; j < jugadores.getTamano(); j++) {
+                jugadores.get(j).getMano().agregarCarta(mazo.obtenerUnaCarta());
             }
             dealer.getMano().agregarCarta(mazo.obtenerUnaCarta());
         }
 
         indiceJugadorActual = 0;
-
-        // Verificamos si el primer jugador (o los siguientes) obtuvieron 21 desde el inicio
         validarJugadorActual21();
     }
 
-    // El resto de métodos de JuegoBlackjack se mantienen exactamente igual que antes
     public Jugador getJugadorActual() {
-        if (indiceJugadorActual < jugadores.size()) {
+        if (indiceJugadorActual < jugadores.getTamano()) {
             return jugadores.get(indiceJugadorActual);
         }
         return null;
@@ -78,18 +72,17 @@ public class JuegoBlackjack {
 
     private void pasarAlSiguienteJugador() {
         indiceJugadorActual++;
-        if (indiceJugadorActual >= jugadores.size()) {
+        if (indiceJugadorActual >= jugadores.getTamano()) {
             turnoDealer();
         } else {
-            // Verificar si el nuevo jugador al que le toca el turno ya tenía 21 desde el inicio
             validarJugadorActual21();
         }
     }
 
     public void turnoDealer() {
         boolean hayJugadoresVivos = false;
-        for (Jugador j : jugadores) {
-            if (!j.getMano().sePaso()) {
+        for (int i = 0; i < jugadores.getTamano(); i++) {
+            if (!jugadores.get(i).getMano().sePaso()) {
                 hayJugadoresVivos = true;
                 break;
             }
@@ -114,24 +107,23 @@ public class JuegoBlackjack {
     }
 
     public boolean esFinDeRonda() {
-        return indiceJugadorActual >= jugadores.size();
+        return indiceJugadorActual >= jugadores.getTamano();
     }
 
-    public ArrayList<Jugador> getJugadores() { return jugadores; }
+    public Pila<Jugador> getJugadores() { return jugadores; }
     public Jugador getDealer() { return dealer; }
 
-    // Metodo auxiliar para saltar automaticamente a los jugadores que inicien con 21 puntos
     private void validarJugadorActual21() {
         while (!esFinDeRonda()) {
             Jugador actual = getJugadorActual();
             if (actual != null && actual.getMano().calcularPuntaje() == 21) {
                 actual.plantarse();
                 indiceJugadorActual++;
-                if (indiceJugadorActual >= jugadores.size()) {
+                if (indiceJugadorActual >= jugadores.getTamano()) {
                     turnoDealer();
                 }
             } else {
-                break; // Si el jugador actual no tiene 21, se detiene el bucle para que juegue normalmente
+                break;
             }
         }
     }

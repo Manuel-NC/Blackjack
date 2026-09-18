@@ -1,6 +1,7 @@
 package com.example.blackjack.Vista;
 
 import com.example.blackjack.Controlador.JuegoBlackjack;
+import com.example.blackjack.Estructuras.Pila;
 import com.example.blackjack.Modelo.CartaInglesa;
 import com.example.blackjack.Modelo.Jugador;
 import javafx.geometry.Pos;
@@ -10,8 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-
-import java.util.ArrayList;
 
 public class PanelTableroBlackjackGUI extends VBox {
 
@@ -44,8 +43,8 @@ public class PanelTableroBlackjackGUI extends VBox {
         lblEstado = new Label("");
         lblEstado.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         lblEstado.setStyle("-fx-text-fill: white; -fx-alignment: center;");
-        lblEstado.setWrapText(true); // Permite saltos de línea automáticos
-        lblEstado.setMaxWidth(750);  // Define el ancho máximo antes de saltar de línea
+        lblEstado.setWrapText(true);
+        lblEstado.setMaxWidth(750);
 
         lblPuntosCasa = new Label();
         lblPuntosCasa.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
@@ -78,31 +77,27 @@ public class PanelTableroBlackjackGUI extends VBox {
         );
     }
 
-    // Metodo para colocar el fondo de la aplicacion
     private void configurarFondo() {
         try {
             var recurso = getClass().getResource("/com/example/blackjack/fondo_blackjack.png");
 
             if (recurso == null) {
-                System.err.println("No se encontró la imagen en los recursos.");
                 this.setStyle("-fx-padding: 20; -fx-background-color: #1b5e20;");
                 return;
             }
 
             Image imagenFondo = new Image(recurso.toExternalForm());
 
-            // Configuración para que actúe como mosaico (patrón repetitivo)
             BackgroundImage backgroundImage = new BackgroundImage(
                     imagenFondo,
-                    BackgroundRepeat.REPEAT,   // Repetir horizontalmente
-                    BackgroundRepeat.REPEAT,   // Repetir verticalmente
+                    BackgroundRepeat.REPEAT,
+                    BackgroundRepeat.REPEAT,
                     BackgroundPosition.DEFAULT,
-                    BackgroundSize.DEFAULT     // Mantiene el tamaño real del patrón
+                    BackgroundSize.DEFAULT
             );
 
             this.setBackground(new Background(backgroundImage));
         } catch (Exception e) {
-            System.err.println("Error al cargar la imagen: " + e.getMessage());
             this.setStyle("-fx-padding: 20; -fx-background-color: #1b5e20;");
         }
     }
@@ -110,18 +105,19 @@ public class PanelTableroBlackjackGUI extends VBox {
     public void actualizarTablero(JuegoBlackjack juego) {
         // Actualizar casa
         boxCasa.getChildren().clear();
-        ArrayList<CartaInglesa> cartasCasa = juego.getDealer().getMano().getCartas();
-        for (CartaInglesa c : cartasCasa) {
-            boxCasa.getChildren().add(crearTarjetaCarta(c));
+        Pila<CartaInglesa> cartasCasa = juego.getDealer().getMano().getCartas();
+        for (int i = 0; i < cartasCasa.getTamano(); i++) {
+            boxCasa.getChildren().add(crearTarjetaCarta(cartasCasa.get(i)));
         }
         lblPuntosCasa.setText("Puntos: " + juego.getDealer().getMano().calcularPuntaje());
 
         // Actualizar jugadores
         boxTodosLosJugadores.getChildren().clear();
         Jugador actual = juego.getJugadorActual();
-        ArrayList<Jugador> listaJugadores = juego.getJugadores();
+        Pila<Jugador> listaJugadores = juego.getJugadores();
 
-        for (Jugador j : listaJugadores) {
+        for (int i = 0; i < listaJugadores.getTamano(); i++) {
+            Jugador j = listaJugadores.get(i);
             VBox panelJugador = new VBox(8);
             panelJugador.setAlignment(Pos.CENTER);
 
@@ -141,9 +137,9 @@ public class PanelTableroBlackjackGUI extends VBox {
             HBox boxCartas = new HBox(5);
             boxCartas.setAlignment(Pos.CENTER);
 
-            ArrayList<CartaInglesa> cartasJugador = j.getMano().getCartas();
-            for (CartaInglesa c : cartasJugador) {
-                boxCartas.getChildren().add(crearTarjetaCarta(c));
+            Pila<CartaInglesa> cartasJugador = j.getMano().getCartas();
+            for (int k = 0; k < cartasJugador.getTamano(); k++) {
+                boxCartas.getChildren().add(crearTarjetaCarta(cartasJugador.get(k)));
             }
 
             panelJugador.getChildren().addAll(lblNombre, lblPuntos, boxCartas);
@@ -152,43 +148,33 @@ public class PanelTableroBlackjackGUI extends VBox {
 
         if (!juego.esFinDeRonda()) {
             lblTurnoActual.setText("TURNO DE: " + actual.getNombre());
+            btnPedir.setDisable(false);
+            btnPlantarse.setDisable(false);
+            btnNuevaRonda.setDisable(true);
         } else {
             lblTurnoActual.setText("--- RONDA FINALIZADA ---");
             btnPedir.setDisable(true);
             btnPlantarse.setDisable(true);
-            mostrarResultadosFinDeRonda(juego);
-        }
-
-        // Estado de los botones según la fase del juego
-        if (!juego.esFinDeRonda()) {
-            lblTurnoActual.setText("TURNO DE: " + actual.getNombre());
-            btnPedir.setDisable(false);
-            btnPlantarse.setDisable(false);
-            btnNuevaRonda.setDisable(true); // DESHABILITADO durante la partida
-        } else {
-            lblTurnoActual.setText(">>> RONDA FINALIZADA <<<");
-            btnPedir.setDisable(true);
-            btnPlantarse.setDisable(true);
-            btnNuevaRonda.setDisable(false); // SOLO SE ACTIVA al terminar la ronda
+            btnNuevaRonda.setDisable(false);
             mostrarResultadosFinDeRonda(juego);
         }
     }
 
     private void mostrarResultadosFinDeRonda(JuegoBlackjack juego) {
         StringBuilder resultados = new StringBuilder();
-        ArrayList<Jugador> listaJugadores = juego.getJugadores();
+        Pila<Jugador> listaJugadores = juego.getJugadores();
 
-        for (Jugador j : listaJugadores) {
+        for (int i = 0; i < listaJugadores.getTamano(); i++) {
+            Jugador j = listaJugadores.get(i);
             resultados.append(j.getNombre())
                     .append(": ")
                     .append(juego.evaluarResultadoJugador(j))
-                    .append("\n"); // Salto de línea por cada jugador
+                    .append("\n");
         }
         lblEstado.setText(resultados.toString().trim());
     }
 
     private VBox crearTarjetaCarta(CartaInglesa carta) {
-        // Convertir el nombre del palo al símbolo Unicode correspondiente
         String paloTexto = carta.getPalo().toString().toUpperCase();
         String paloSimbolo = "";
 
@@ -210,11 +196,10 @@ public class PanelTableroBlackjackGUI extends VBox {
                 paloSimbolo = "♠";
                 break;
             default:
-                paloSimbolo = paloTexto; // Por si acaso
+                paloSimbolo = paloTexto;
                 break;
         }
 
-        // Formatear el valor del número/letra
         String valorTexto = String.valueOf(carta.getValor());
         if (carta.getValor() == 11) valorTexto = "J";
         else if (carta.getValor() == 12) valorTexto = "Q";
@@ -223,7 +208,6 @@ public class PanelTableroBlackjackGUI extends VBox {
 
         String colorTexto = carta.getColor().equalsIgnoreCase("rojo") ? "#cc0000" : "#000000";
 
-        // Contenedor rectangular de la carta
         VBox tarjeta = new VBox(2);
         tarjeta.setPrefSize(50, 75);
         tarjeta.setMinSize(50, 75);
